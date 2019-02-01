@@ -90,17 +90,20 @@
       onClickUpdateListBtn () {
         this.isUpdatingDeviceList = true
         AdbClient.devices().then((res) => {
-          // 端末ドロップダウンロストを一旦リセット
+          // 端末ドロップダウンリストを一旦リセット
           this.devices = []
+          this.selectedDevice = null
           for (let device of res) {
             this.devices.push({value: device.id, text: device.name})
           }
+          this.selectedDevice = this.devices[0].value
           this.isUpdatingDeviceList = false
           this.showMessageDialog('機器リストを更新しました')
         }).catch((err) => {
           this.devices = [
             {value: null, text: err.message}
           ]
+          this.selectedDevice = null
           this.isUpdatingDeviceList = false
         })
       },
@@ -117,7 +120,7 @@
       },
       onClickInstallApkBtn () {
         this.isInstalling = true
-        AdbClient.install(this.installApkPath, this.isReplace, this.isDowngrade).then(() => {
+        AdbClient.install(this.selectedDevice, this.installApkPath, this.isReplace, this.isDowngrade).then(() => {
           this.isInstalling = false
           this.showMessageDialog('インストールに成功しました')
         }).catch((err) => {
@@ -127,7 +130,7 @@
       },
       onClickUninstallBtn () {
         this.isUninstalling = true
-        AdbClient.uninstall(this.uninstallPackage).then(() => {
+        AdbClient.uninstall(this.selectedDevice, this.uninstallPackage).then(() => {
           this.isUninstalling = false
           this.showMessageDialog('アンインストールに成功しました')
         }).catch((err) => {
@@ -137,7 +140,7 @@
       },
       onClickClearAppDataBtn () {
         this.isClearingAppData = true
-        AdbClient.clearAppData(this.clearAppDataPackage).then(() => {
+        AdbClient.clearAppData(this.selectedDevice, this.clearAppDataPackage).then(() => {
           this.isClearingAppData = false
           this.showMessageDialog('アプリデータの削除に成功しました')
         }).catch((err) => {
